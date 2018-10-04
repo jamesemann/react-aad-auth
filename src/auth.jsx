@@ -15,7 +15,11 @@ export class AzureADAuth extends React.Component {
       serviceToken: null
     };
 
+  }
+  
+  componentDidMount() {
     this.loadConfig();
+
   }
 
   loadConfig() {
@@ -41,16 +45,19 @@ export class AzureADAuth extends React.Component {
 
     let isCallback = self.authContext.isCallback(window.location.hash);
     if (isCallback) {
+      console.log('callback triggered');
       self.authContext.handleWindowCallback();
     }
 
     let user = self.authContext.getCachedUser();
     if (user) {
+      console.log('user already exists');
       self.authContext.acquireToken(authSharepointAudience, function (errordetails, result, error) {
-        self.state.serviceToken = result;
+        self.setState( { serviceToken : result });
       });
     }
     else {
+      console.log('user doesnt exist, logging in');
       self.authContext.login();
     }
   }
