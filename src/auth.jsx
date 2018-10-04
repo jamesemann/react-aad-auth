@@ -1,7 +1,6 @@
 import AuthenticationContext from 'adal-angular';
 import React from 'react';
 
-
 export class AzureADAuth extends React.Component {
   constructor(props) {
     super(props);
@@ -20,31 +19,34 @@ export class AzureADAuth extends React.Component {
   }
 
   loadConfig() {
-    var self = this;
-    var endpoints = {};
-    endpoints['sharePointUri'] = 'https://blackmarble.sharepoint.com';
-    var redirectUrl = window.location.protocol +
+    let authClientId = 'b81be089-6745-4323-9411-dd29ae689d45';
+    let authTenant = 'blackmarble.com';
+    let authSharepointAudience = 'https://blackmarble.sharepoint.com';
+    let self = this;
+    let endpoints = {};
+    endpoints['sharePointUri'] = authSharepointAudience;
+    let redirectUrl = window.location.protocol +
       '//' +
       window.location.hostname +
       (window.location.port !== '80' && window.location.port !== '443' ? (':' + window.location.port) : '');
     self.authContext = new AuthenticationContext({
       instance: 'https://login.microsoftonline.com/',
-      tenant: 'blackmarble.com',
-      clientId: 'b81be089-6745-4323-9411-dd29ae689d45',
+      tenant: authTenant,
+      clientId: authClientId,
       postLogoutRedirectUri: redirectUrl,
       redirectUri: redirectUrl,
       extraQueryParameter: 'nux=1',
       endpoints: endpoints
     });
 
-    var isCallback = self.authContext.isCallback(window.location.hash);
+    let isCallback = self.authContext.isCallback(window.location.hash);
     if (isCallback) {
       self.authContext.handleWindowCallback();
     }
 
-    var user = self.authContext.getCachedUser();
+    let user = self.authContext.getCachedUser();
     if (user) {
-      self.authContext.acquireToken('https://blackmarble.sharepoint.com', function (errordetails, result, error) {
+      self.authContext.acquireToken(authSharepointAudience, function (errordetails, result, error) {
         self.state.serviceToken = result;
       });
     }
